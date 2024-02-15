@@ -5,9 +5,10 @@
     const initTime = 1577836800 // UTC 1 Jan 2020
 
     const randEvent = (): TimedEvent=>{
-        let ev = Array(2).map(()=>{return initTime + Math.floor(Math.random() * 5_000)}).sort();
+        let ev = Array(2, 0).map(()=>{return initTime + Math.floor(Math.random() * 5_000)}).sort();
+        
         return new TimedEvent(...ev, {
-            sortIndex: null
+            sortIndex: 0.5
         });
     }
 
@@ -35,13 +36,13 @@
 
         "LPush": ()=>{
             console.log("Left Push");
-            tl.push(randEvent(), "left");
+            tl.events.unshift(randEvent());
             tl = tl;
         },
 
         "RPush": ():void=>{
             console.log("Right Push");
-            tl.push(randEvent(), "right");
+            tl.events.push(randEvent());
             tl = tl;
         }
     }
@@ -50,18 +51,22 @@
 
 <div class="w-full flex flex-row align-middle justify-around px-10">
     {#each Object.entries(exampleFuncs) as [name, func]}
-        <button class="text-slate-300 z-50" on:click={func}>{name}</button>
+        <button on:click={func} class="text-slate-300 z-50">{name}</button>
     {/each}
 </div>
 
 <div class="w-full flex flex-row align-middle justify-around px-10">
     {#each tl.events as ev }
-        <p class="text-slate-300">
+    <div class="text-center">
+    <svg  viewBox="0 0 100 100" width="50%" height="50%" xmlns="http://www.w3.org/2000/svg">
+        <circle fill="green" cx="50" cy="50" r="50" />
+        <text x="46" y="52" fill="white" class="small">{ev.metaData.sortIndex}</text>
+      </svg>
+        <p class="text-slate-300 text-center text-sm">
             Start: {ev.start.date()}
             <br>
             End: {ev.end.date()}
-            <br>
-            Sort Index: {ev.metaData.sortIndex}
         </p>
+    </div>
     {/each}
 </div>
